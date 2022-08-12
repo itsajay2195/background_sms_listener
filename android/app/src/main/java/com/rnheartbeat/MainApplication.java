@@ -5,6 +5,9 @@ import android.content.Context;
 
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.reactlibrary.ksquad.readsms.ReadSmsPackage;
+import com.faizal.OtpVerify.RNOtpVerifyPackage;
+import com.centaurwarchief.smslistener.SmsListenerPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
