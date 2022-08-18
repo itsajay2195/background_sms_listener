@@ -1,41 +1,51 @@
-import { AppRegistry } from 'react-native';
-import React from 'react';
-import { Provider } from 'react-redux';
-import App from './App';
-import { name as appName } from './app.json';
-import { setHeartBeat, store } from './store';
+import { AppRegistry } from "react-native";
+import React from "react";
+import { Provider } from "react-redux";
+import App from "./App";
+import { name as appName } from "./app.json";
+import { setHeartBeat, store } from "./store";
 import SmsReader from "react-native-sms-reader";
-
-
-let message 
+import {base_url,bearer_token,channel_id} from './constants'
+ 
+let message;
 const startReadSMS = async () => {
-  const hasPermission = await SmsReader.requestReadSMSPermission();
-  if (hasPermission) {
-    SmsReader.startReadSMS((status, sms, error) => {
-      
-      if (status === "success" && sms!== message) {
-        message =sms
-        console.log("Great!! you have received new sms:", sms);
-      }
-    });
-  }
-}
-const MyHeadlessTask = async () => {
+	const hasPermission = await SmsReader.requestReadSMSPermission();
 
-  startReadSMS()
-  store.dispatch(setHeartBeat(true));
-  // store.dispatch(setHeartBeat(false));
-  // setTimeout(() => {
-  
-  // }, 10);
+	if (hasPermission) {
+		SmsReader.startReadSMS((status, sms, error) => {
+			if (status === "success" && sms !== message) {
+				message = sms;
+				let requestOptions = {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization:
+							`Bearer ${bearer_token}`,
+					},
+					body: JSON.stringify({ channel: channel_id, text: sms }),
+				};
+
+				fetch(base_url, requestOptions).then(
+					(response) => console.log(response)
+				);
+			}
+		});
+	}
+};
+const MyHeadlessTask = async () => {
+	startReadSMS();
+	store.dispatch(setHeartBeat(true));
+
+	setTimeout(() => {
+		store.dispatch(setHeartBeat(false));
+	}, 500);
 };
 
 const RNRedux = () => (
-  <Provider store={store}>
-    <App />
-  </Provider>
+	<Provider store={store}>
+		<App />
+	</Provider>
 );
 
-
-AppRegistry.registerHeadlessTask('Heartbeat', () => MyHeadlessTask);
+AppRegistry.registerHeadlessTask("Heartbeat", () => MyHeadlessTask);
 AppRegistry.registerComponent(appName, () => RNRedux);

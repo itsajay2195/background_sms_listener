@@ -1,11 +1,11 @@
-import React,{useEffect} from 'react';
+import React,{useEffect,useState} from 'react';
 import {
   StyleSheet, Text, View, TouchableOpacity, Image,
 } from 'react-native';
 import { connect } from 'react-redux';
 import Heartbeat from './Heartbeat';
-import heart from './heart.png';
-import RNOtpVerify from 'react-native-otp-verify';
+import heart from './heart-fill-icon.png';
+
 
 
 const styles = StyleSheet.create({
@@ -13,15 +13,16 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'white',
+    backgroundColor: '#00C684',
   },
   view: {
     flex: 0.5,
+    backgroundColor: '#00C684',
     justifyContent: 'center',
     alignItems: 'center',
   },
   button: {
-    backgroundColor: 'gray',
+    backgroundColor: '#009E6A',
     padding: 10,
     margin: 10,
   },
@@ -35,44 +36,33 @@ const styles = StyleSheet.create({
 const App = ({ heartBeat }) => {
   
   const imageSize = heartBeat ? 150 : 100;
- 
-  // SmsListener.addListener(mess => {
-  //   console.log('cools',mess)
-  // })
-  // const startReadSMS = async () => {
-   
-  //   const hasPermission = await SmsReader.requestReadSMSPermission();
-  //   console.warn('just in',hasPermission)
-  //   if (hasPermission) {
-      
-  //     SmsReader.startReadSMS((status, sms, error) => {
-        
-  //       if (status == "success") {
-  //         console.warn('in')
-  //         console.warn("Great!! you have received new sms:", sms);
-  //       }
-  //     });
-  //   }
-  // };
+  
+  const [isRunning, setIsRunning] = useState(false)
 
   useEffect(() => {
-    // startReadSMS();
+    console.log('ooo',heartBeat)
+    
   },);
   
- const otpHandler = (message) => {
-    console.log('SMS :: ',message)
-}
+
   return (
     <View style={styles.container}>
       <View style={styles.view}>
-        <Image source={heart} style={{ width: imageSize, height: imageSize }} resizeMode="contain" />
+        <Image source={heart} style={{ tintColor:'#009E6A',width: imageSize, height: imageSize }} resizeMode="contain" />
       </View>
+      <Text numberOfLines={2} style={{fontSize:20,fontStyle:'italic',color:'#FFFFFF'}}>{isRunning?'The service is up and running, click stop to end the service' :  'Click start to begin the service'}</Text>
+
       <View style={styles.view}>
-        <TouchableOpacity style={styles.button} onPress={() => {
-          Heartbeat.startService()}}>
+        <TouchableOpacity activeOpacity={0.7} disabled={isRunning ? true :false} style={[styles.button,{opacity:isRunning?0.4 :1}]} onPress={() => {
+          Heartbeat.startService()
+          setIsRunning(true)
+          }}>
           <Text style={styles.instructions}>Start</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => Heartbeat.stopService()}>
+        <TouchableOpacity disabled={isRunning ? false :true} style={[styles.button,{opacity:isRunning ?1 :0.4}]} onPress={() =>{ 
+          Heartbeat.stopService()
+          setIsRunning(false)
+        }}>
           <Text style={styles.instructions}>Stop</Text>
         </TouchableOpacity>
       </View>
